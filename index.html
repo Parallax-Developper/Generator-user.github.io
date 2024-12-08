@@ -1,8 +1,9 @@
-<!DOCTYPE html>
-<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Générez des utilisateurs aléatoires facilement avec notre site. Simple, rapide, et gratuit !">
+    <meta name="keywords" content="user generator, générateur de pseudos, outils web, random user">
+    <meta name="author" content="Ton Nom ou Pseudo">
     <title>Générateur de Pseudos</title>
     <style>
         /* Reset et styles de base */
@@ -104,116 +105,3 @@
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Générateur de Pseudos</h1>
-        
-        <div class="input-group">
-            <input type="text" 
-                   id="baseWord" 
-                   placeholder="Entrez un mot ou un prénom"
-                   required>
-        </div>
-        
-        <button onclick="generateUsernames()">Générer des pseudos</button>
-        
-        <div class="results" id="results" style="display: none;">
-            <h2>Suggestions de pseudos :</h2>
-            <ul class="username-list" id="usernameList"></ul>
-        </div>
-    </div>
-
-    <script>
-        // Caractères spéciaux et chiffres qui seront utilisés pour générer les pseudos
-        const specialChars = ['_', '.', '-', 'x', '$'];
-        const numbers = '0123456789';
-
-        function generateUsernames() {
-            const baseWord = document.getElementById('baseWord').value.trim();
-            
-            // Vérification si un mot a été entré
-            if (!baseWord) {
-                alert('Veuillez entrer un mot ou un prénom');
-                return;
-            }
-
-            const usernames = [];
-            
-            // Génération de 5 pseudos différents
-            while (usernames.length < 5) {
-                let username = generateSingleUsername(baseWord);
-                
-                // Évite les doublons
-                if (!usernames.includes(username)) {
-                    usernames.push(username);
-                }
-            }
-
-            // Affichage des résultats
-            displayUsernames(usernames);
-        }
-
-        function generateSingleUsername(baseWord) {
-            // Différentes stratégies de génération
-            const strategies = [
-                // Stratégie 1: Ajoute des chiffres à la fin
-                () => baseWord + getRandomNumbers(2),
-                
-                // Stratégie 2: Ajoute un caractère spécial et des chiffres
-                () => baseWord + getRandomChar(specialChars) + getRandomNumbers(2),
-                
-                // Stratégie 3: Ajoute des chiffres au début
-                () => getRandomNumbers(2) + baseWord,
-                
-                // Stratégie 4: Encadre avec des caractères spéciaux
-                () => getRandomChar(specialChars) + baseWord + getRandomChar(specialChars),
-                
-                // Stratégie 5: Mélange majuscules/minuscules et ajoute des chiffres
-                () => randomizeCase(baseWord) + getRandomNumbers(2)
-            ];
-
-            // Sélectionne une stratégie au hasard
-            const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
-            return randomStrategy();
-        }
-
-        // Fonctions utilitaires
-        function getRandomChar(chars) {
-            return chars[Math.floor(Math.random() * chars.length)];
-        }
-
-        function getRandomNumbers(length) {
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += numbers[Math.floor(Math.random() * numbers.length)];
-            }
-            return result;
-        }
-
-        function randomizeCase(str) {
-            return str
-                .split('')
-                .map(char => Math.random() > 0.5 ? char.toUpperCase() : char.toLowerCase())
-                .join('');
-        }
-
-        function displayUsernames(usernames) {
-            const resultsDiv = document.getElementById('results');
-            const usernameList = document.getElementById('usernameList');
-            
-            // Vide la liste précédente
-            usernameList.innerHTML = '';
-            
-            // Ajoute chaque pseudo à la liste
-            usernames.forEach(username => {
-                const li = document.createElement('li');
-                li.textContent = username;
-                usernameList.appendChild(li);
-            });
-            
-            // Affiche la section des résultats
-            resultsDiv.style.display = 'block';
-        }
-    </script>
-</body>
-</html>
