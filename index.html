@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Pseudos</title>
+    <style>
+        /* Reset et styles de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Container principal */
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        /* Styles du formulaire */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        /* Styles de la liste des pseudos */
+        .results {
+            margin-top: 1.5rem;
+        }
+
+        .results h2 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .username-list {
+            list-style: none;
+        }
+
+        .username-list li {
+            background: #f8f8f8;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            color: #333;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .username-list li:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de Pseudos</h1>
+        
+        <div class="input-group">
+            <input type="text" 
+                   id="baseWord" 
+                   placeholder="Entrez un mot ou un prénom"
+                   required>
+        </div>
+        
+        <button onclick="generateUsernames()">Générer des pseudos</button>
+        
+        <div class="results" id="results" style="display: none;">
+            <h2>Suggestions de pseudos :</h2>
+            <ul class="username-list" id="usernameList"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Caractères spéciaux et chiffres qui seront utilisés pour générer les pseudos
+        const specialChars = ['_', '.', '-', 'x', '$'];
+        const numbers = '0123456789';
+
+        function generateUsernames() {
+            const baseWord = document.getElementById('baseWord').value.trim();
+            
+            // Vérification si un mot a été entré
+            if (!baseWord) {
+                alert('Veuillez entrer un mot ou un prénom');
+                return;
+            }
+
+            const usernames = [];
+            
+            // Génération de 5 pseudos différents
+            while (usernames.length < 5) {
+                let username = generateSingleUsername(baseWord);
+                
+                // Évite les doublons
+                if (!usernames.includes(username)) {
+                    usernames.push(username);
+                }
+            }
+
+            // Affichage des résultats
+            displayUsernames(usernames);
+        }
+
+        function generateSingleUsername(baseWord) {
+            // Différentes stratégies de génération
+            const strategies = [
+                // Stratégie 1: Ajoute des chiffres à la fin
+                () => baseWord + getRandomNumbers(2),
+                
+                // Stratégie 2: Ajoute un caractère spécial et des chiffres
+                () => baseWord + getRandomChar(specialChars) + getRandomNumbers(2),
+                
+                // Stratégie 3: Ajoute des chiffres au début
+                () => getRandomNumbers(2) + baseWord,
+                
+                // Stratégie 4: Encadre avec des caractères spéciaux
+                () => getRandomChar(specialChars) + baseWord + getRandomChar(specialChars),
+                
+                // Stratégie 5: Mélange majuscules/minuscules et ajoute des chiffres
+                () => randomizeCase(baseWord) + getRandomNumbers(2)
+            ];
+
+            // Sélectionne une stratégie au hasard
+            const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
+            return randomStrategy();
+        }
+
+        // Fonctions utilitaires
+        function getRandomChar(chars) {
+            return chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        function getRandomNumbers(length) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += numbers[Math.floor(Math.random() * numbers.length)];
+            }
+            return result;
+        }
+
+        function randomizeCase(str) {
+            return str
+                .split('')
+                .map(char => Math.random() > 0.5 ? char.toUpperCase() : char.toLowerCase())
+                .join('');
+        }
+
+        function displayUsernames(usernames) {
+            const resultsDiv = document.getElementById('results');
+            const usernameList = document.getElementById('usernameList');
+            
+            // Vide la liste précédente
+            usernameList.innerHTML = '';
+            
+            // Ajoute chaque pseudo à la liste
+            usernames.forEach(username => {
+                const li = document.createElement('li');
+                li.textContent = username;
+                usernameList.appendChild(li);
+            });
+            
+            // Affiche la section des résultats
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
